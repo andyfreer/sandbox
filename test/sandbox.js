@@ -37,6 +37,15 @@ describe('Sandbox', function() {
     });
   });
 
+  it('should prevent vars leaking between instances', function(done) {
+    sb.run('var leak = "hello";', function(output) {
+    });
+    sb.run('var test = leak', function(output) {
+      output.result.should.eql("'ReferenceError: leak is not defined'");
+      done();
+    });
+  });
+
   it('should effectively prevent code from circumventing the sandbox', function(done) {
     sb.run("var sys=require('sys'); sys.puts('Up in your fridge')", function(output) {
       output.result.should.eql("'ReferenceError: require is not defined'");
